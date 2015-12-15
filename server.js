@@ -1,21 +1,20 @@
 var http = require('http');
 var dispatcher = require('./node_modules/httpdispatcher');
 
-//dispatcher.setStatic('resources');
+dispatcher.setStatic('resources');
 
 http.createServer(handleRequest).listen(process.env.PORT);
 
 function handleRequest(req, res) {
     console.log('Got request for ' + req.url);
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end('<h1>Hello Code and Azure Web Apps!</h1>');
+    //res.writeHead(200, {'Content-Type': 'text/html'});
+    //res.end('<h1>Hello Code and Azure Web Apps!</h1>');
     
-    //dispatcher.dispatch(req, res);
-    //dispatcher.dispatch(req, res);
+    dispatcher.dispatch(req, res);
+    dispatcher.dispatch(req, res);
     
 }
 
-/*
 dispatcher.onGet("/page1", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Page One');
@@ -40,7 +39,6 @@ dispatcher.onError(function(req, res) {
     res.writeHead(404);
 });
 
-*/
 	
 	/*
 	GET /page1 => 'Page One'
