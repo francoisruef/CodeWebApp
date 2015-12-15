@@ -3,7 +3,7 @@ var dispatcher = require('./node_modules/httpdispatcher');
 
 dispatcher.setStatic('resources');
 
-http.createServer(handleRequest).listen(process.env.PORT);
+http.createServer(handleRequest).listen(8080);
 
 function handleRequest(req, res) {
     console.log('Got request for ' + req.url);
@@ -11,8 +11,6 @@ function handleRequest(req, res) {
     //res.end('<h1>Hello Code and Azure Web Apps!</h1>');
     
     dispatcher.dispatch(req, res);
-    dispatcher.dispatch(req, res);
-    
 }
 
 dispatcher.onGet("/", function(req, res) {
@@ -33,20 +31,22 @@ function getDocs() {
     // read lastDocID from database
     
     // get documents
+    console.log('getting documents');
     var httpDoc = require('./node_modules/https');
     
-    //The url we want is: 'www.random.org/integers/?num=1&min=1&max=10&col=1&base=10&format=plain&rnd=new'
     var options = {
         host: 'mseapimgt.azure-api.net',
         port: 443,
         path: '/mse/documents',
-        headers: {'Ocp-Apim-Subscription-Key': '3ef9e13f1cae4dad9086feef67ded274'},
+        headers: {'Ocp-Apim-Subscription-Key': '3ef9e13f1cae4dad9086feef67ded274', 'Content-Type': 'application/json'},
         accept: '*/*'
     };
     
     callback = function(response) {
         var str = '';
     
+        console.log('getting documents callback');
+
         //another chunk of data has been recieved, so append it to `str`
         response.on('data', function (chunk) {
             str += chunk;
@@ -55,10 +55,9 @@ function getDocs() {
         //the whole response has been recieved, so we just print it out here
         response.on('end', function () {
             console.log(str);
+            res.end(str);
         });
         
-        // write string to output
-        res.end(str);
     }
     
     httpDoc.request(options, callback).end();   
@@ -74,6 +73,7 @@ dispatcher.onPost("/page2", function(req, res) {
     res.end('Page Two');
 });
 
+/*
 dispatcher.beforeFilter(/\//, function(req, res, chain) { //any url
     console.log("Before filter");
     chain.next(req, res, chain);
@@ -83,6 +83,7 @@ dispatcher.afterFilter(/\//, function(req, res) { //any url
     console.log("After filter");
     chain.next(req, res, chain);
 });
+*/
 
 dispatcher.onError(function(req, res) {
     res.writeHead(404);
