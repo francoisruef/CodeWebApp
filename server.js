@@ -1,5 +1,5 @@
 var http = require('http');
-var dispatcher = require('./httpdispatcher');
+var dispatcher = require('./node_modules/httpdispatcher');
 
 //dispatcher.setStatic('resources');
 
