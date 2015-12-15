@@ -20,10 +20,52 @@ dispatcher.onGet("/", function(req, res) {
     res.end('Main Page');
 });	
 
-dispatcher.onGet("/page1", function(req, res) {
+dispatcher.onGet("/docs", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Page One');
-});	
+    //res.end('Page One');
+    
+    getDocs();
+});
+
+
+function getDocs() {
+ 
+    // read lastDocID from database
+    
+    // get documents
+    var httpDoc = require('http');
+    
+    //The url we want is: 'www.random.org/integers/?num=1&min=1&max=10&col=1&base=10&format=plain&rnd=new'
+    var options = {
+        host: 'https://mseapimgt.azure-api.net',
+        path: '/mse/documents',
+        headers: {'Ocp-Apim-Subscription-Key': '3ef9e13f1cae4dad9086feef67ded274'}
+    };
+    
+    callback = function(response) {
+        var str = '';
+    
+        //another chunk of data has been recieved, so append it to `str`
+        response.on('data', function (chunk) {
+            str += chunk;
+        });
+    
+        //the whole response has been recieved, so we just print it out here
+        response.on('end', function () {
+            console.log(str);
+        });
+        
+        // write string to output
+        res.end(str);
+    }
+    
+    httpDoc.request(options, callback).end();   
+    
+    // push new documents to event hub
+    
+    // save last docID
+
+};	
 
 dispatcher.onPost("/page2", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -70,15 +112,5 @@ dispatcher.onPost("/post1", function(req, res) {
     res.end('Got Post Data');
 });
 
-function getDocs() {
-    // read lastDocID from database
-    
-    // get documents
-    
-    
-    // push new documents to event hub
-    
-    // save last docID
 
-}
 */
