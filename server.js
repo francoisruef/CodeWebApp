@@ -15,6 +15,11 @@ function handleRequest(req, res) {
     
 }
 
+dispatcher.onGet("/", function(req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('Main Page');
+});	
+
 dispatcher.onGet("/page1", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Page One');
