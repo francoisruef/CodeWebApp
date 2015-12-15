@@ -26,7 +26,7 @@ dispatcher.onGet("/docs", function(req, res) {
     
     var docs = getDocs();
     console.log('docs = '+docs);
-    res.end('docs outout');
+    res.end('docs output:'+docs);
 });
 
 
@@ -74,6 +74,7 @@ function getDocs() {
 };	
 
 dispatcher.onPost("/page2", function(req, res) {
+    console.log('Page Two');
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Page Two');
 });
