@@ -15,24 +15,30 @@ function handleRequest(req, res) {
 
 dispatcher.onGet("/", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
+    console.log('Main Page');
     res.end('Main Page');
 });	
 
 dispatcher.onGet("/docs", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
+    console.log('/docs');
     //res.end('Page One');
     
-    getDocs();
+    var docs = getDocs();
+    console.log('docs = '+docs);
+    res.end('docs outout');
 });
 
 
 function getDocs() {
  
+    var str ='';
+
     // read lastDocID from database
     
     // get documents
     console.log('getting documents');
-    var httpDoc = require('./node_modules/https');
+    var httpDoc = require('https');
     
     var options = {
         host: 'mseapimgt.azure-api.net',
@@ -42,9 +48,7 @@ function getDocs() {
         accept: '*/*'
     };
     
-    callback = function(response) {
-        var str = '';
-    
+    callback = function(response) {    
         console.log('getting documents callback');
 
         //another chunk of data has been recieved, so append it to `str`
@@ -55,17 +59,18 @@ function getDocs() {
         //the whole response has been recieved, so we just print it out here
         response.on('end', function () {
             console.log(str);
-            res.end(str);
         });
         
     }
     
-    httpDoc.request(options, callback).end();   
+    httpDoc.request(options, callback).end();
     
     // push new documents to event hub
     
     // save last docID
 
+    // parse and return JSON object
+    return str;
 };	
 
 dispatcher.onPost("/page2", function(req, res) {
