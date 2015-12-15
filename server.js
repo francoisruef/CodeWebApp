@@ -33,13 +33,15 @@ function getDocs() {
     // read lastDocID from database
     
     // get documents
-    var httpDoc = require('http');
+    var httpDoc = require('./node_modules/https');
     
     //The url we want is: 'www.random.org/integers/?num=1&min=1&max=10&col=1&base=10&format=plain&rnd=new'
     var options = {
-        host: 'https://mseapimgt.azure-api.net',
+        host: 'mseapimgt.azure-api.net',
+        port: 443,
         path: '/mse/documents',
-        headers: {'Ocp-Apim-Subscription-Key': '3ef9e13f1cae4dad9086feef67ded274'}
+        headers: {'Ocp-Apim-Subscription-Key': '3ef9e13f1cae4dad9086feef67ded274'},
+        accept: '*/*'
     };
     
     callback = function(response) {
