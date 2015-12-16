@@ -2,11 +2,22 @@ var http = require('http');
 var dispatcher = require('./node_modules/httpdispatcher');
 var httpDoc = require('https');
 var request = require('request');
+var https = require('https');
+var crypto = require('crypto');
 
+//EventHub
+var namespace = 'mse-demo';
+var hubname = 'msehub';
+var devicename ='test';
+var my_sas = '';
+// Shared access key (from Event Hub configuration)
+var my_key_name = 'sending';
+var my_key = 'key';
 
 dispatcher.setStatic('resources');
-
+createToken();
 http.createServer(handleRequest).listen(8080);
+
 
 function handleRequest(req, res) {
     console.log('Got request for ' + req.url);
@@ -90,11 +101,78 @@ function push2EventHub(docsIn, lastDocId) {
         var obj = docs[i];
     
         console.log(obj.id);
-        callEventHub(obj);
+        callEventHub2(obj);
     }    
     
     return lastDocId;
 }
+
+
+function createToken() {
+    
+    
+    // Full Event Hub publisher URI
+    var my_uri = 'https://' + namespace + '.servicebus.windows.net' + '/' + hubname + '/publishers/' + devicename + '/messages';
+    
+    // Create a SAS token
+    // See http://msdn.microsoft.com/library/azure/dn170477.aspx
+    
+    function create_sas_token(uri, key_name, key)
+    {
+        // Token expires in 24 hours
+        var expiry = Math.floor(new Date().getTime()/1000+3600*24);
+    
+        var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
+        var hmac = crypto.createHmac('sha256', key);
+        hmac.update(string_to_sign);
+        var signature = hmac.digest('base64');
+        var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
+    
+        return token;
+    }
+    
+    my_sas = create_sas_token(my_uri, my_key_name, my_key);
+    
+    console.log(my_sas);
+        
+}
+
+
+function callEventHub2(doc) {
+    
+    var payload = JSON.stringify(doc);
+    var my_sas = "";
+    
+    var options = {
+        hostname: namespace + '.servicebus.windows.net',
+        port: 443,
+        path: '/' + hubname + '/publishers/' + devicename + '/messages',
+        method: 'POST',
+        headers: {
+            'Authorization': my_sas,
+            'Content-Length': payload.length,
+            'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
+        }
+    };
+    
+    var req = https.request(options, function(res) {
+    console.log("statusCode: ", res.statusCode);
+    console.log("headers: ", res.headers);
+    
+    res.on('data', function(d) {
+            process.stdout.write(d);
+        });
+    });
+    
+    req.on('error', function(e) {
+        console.error(e);
+    });
+    
+    req.write(payload);
+    req.end();
+    
+}
+
 
 function callEventHub(doc) {
     
@@ -115,6 +193,7 @@ function callEventHub(doc) {
         console.log('push to eventhub: '+doc.id);
         console.log("statusCode: ", response.statusCode);
 
+        /*
         //another chunk of data has been recieved, so append it to `str`
         response.on('data', function (chunk) {
             str += chunk;
@@ -128,10 +207,28 @@ function callEventHub(doc) {
         response.on('end', function () {
             console.log(str);
         });
+        */
         
     }
     
-    httpDoc.request(options, callback).end();
+    function callback2(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log('status 200');  
+        }
+        if (!error && response.statusCode == 201) {
+            console.log('status 201');  
+        }
+        if (!error) {
+            //var info = JSON.parse(JSON.stringify(body));
+            //console.log(info);
+            console.log(body);
+        }
+        else {
+            console.log('Error happened: '+ error);
+        }
+    }
+    
+    request(options, callback2);
     
 }	
 
