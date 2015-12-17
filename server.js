@@ -42,22 +42,17 @@ dispatcher.onGet("/docs", function(req, res) {
     console.log('/docs');
     //res.end('Page One');
     
-    var docs = getDocs(res);
-    
-    
-    
+    var docs = processDocs(helpers.push2EventHub);
     
     console.log('docs = '+docs);
     //res.end('docs output:'+docs);
 });
 
 
-function getDocs(res) {
+function processDocs() {
  
-    lastDocId
-    
-    
     // read lastDocID from database
+    // not implemented yet
     
     // get documents
     console.log('getting documents');
@@ -73,6 +68,7 @@ function getDocs(res) {
     var str ='';
     callback = function(response) {    
         console.log('getting documents callback');
+        console.log("statusCode: ", response.statusCode);
 
         //another chunk of data has been recieved, so append it to `str`
         response.on('data', function (chunk) {
@@ -81,8 +77,6 @@ function getDocs(res) {
     
         //the whole response has been recieved, so we just print it out here
         response.on('end', function () {
-            console.log(str);
-            res.end(str);
 
             // push new documents to event hub
             lastDocId = push2EventHub(str, lastDocId);
@@ -129,6 +123,13 @@ function push2EventHub(docsIn, lastDocId) {
         console.log("payload:"+payload);
         
         helpers.push2EventHub(payload, namespace, hubname, devicename, my_sas);
+        
+        var docId = parseInt(obj.id);
+        if (docId > lastDocId) {
+            docId = docId;
+        }
+        console.log("lastDocId:"+lastDocId);
+        
     }    
     
     return lastDocId;
