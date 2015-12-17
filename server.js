@@ -44,10 +44,10 @@ dispatcher.onGet("/docs", function(req, res) {
     console.log('/docs');
     //res.end('Page One');
     
-    var docs = processDocs(helpers.push2EventHub);
+    var re = processDocs(helpers.push2EventHub);
     
-    console.log('docs = '+docs);
-    //res.end('docs output:'+docs);
+    console.log('/docs');
+    res.end('/docs');
 });
 
 
@@ -81,7 +81,9 @@ function processDocs() {
         response.on('end', function () {
 
             // push new documents to event hub
-            lastDocId = push2EventHub(str, lastDocId);
+            push2EventHub(str, lastDocId);
+            lastDocId = re.lastDocId;
+            
 
             // save last docID
             console.log('lastDocId='+lastDocId);
@@ -92,18 +94,16 @@ function processDocs() {
     
     httpDoc.request(options, callback).end();
     
-
-    // parse and return JSON object
-    return str;
 };
 
 function push2EventHub(docsIn, lastDocId) {
     var jDocs = JSON.parse(docsIn);
     var docs = jDocs.documents;
     
+    var processed = 0;
+    
     for(var i = 0; i < docs.length && i<numDocs; i++) {
         var obj = docs[i];
-    
         console.log(obj.id);
         var payload = '';
         
@@ -123,6 +123,7 @@ function push2EventHub(docsIn, lastDocId) {
         console.log("payload:"+payload);
         
         helpers.push2EventHub(payload, namespace, hubname, devicename, my_sas, i);
+        processed = processed+1;
         
         var docId = parseInt(obj.id);
         if (docId > lastDocId) {
@@ -133,7 +134,7 @@ function push2EventHub(docsIn, lastDocId) {
         
     }    
     
-    return lastDocId;
+    return {"lastDocId": lastDocId, "processed": processed};
 }
 
 
