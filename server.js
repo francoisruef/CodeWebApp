@@ -23,7 +23,7 @@ console.log("my_sas:"+my_sas);
 
 dispatcher.setStatic('resources');
 
-http.createServer(handleRequest).listen(8080);
+http.createServer(handleRequest).listen(80);
 
 
 function handleRequest(req, res) {
