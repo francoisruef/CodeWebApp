@@ -108,7 +108,6 @@ function push2EventHub(docsIn, lastDocId) {
         var payload = '';
         
         //var payload = JSON.stringify(doc);
-        /*
         var payloadRaw = { 
                 "id":obj.id,
                 "publicationDate": obj.publicationDate,
@@ -118,9 +117,8 @@ function push2EventHub(docsIn, lastDocId) {
                 //"score":obj.score.normalScore
         };
         payload = JSON.stringify(payloadRaw);
-        */
         
-        payload = JSON.stringify(helpers.flatten(obj));
+        //payload = JSON.stringify(helpers.flatten(obj));
         
         console.log("payload:"+payload);
         
