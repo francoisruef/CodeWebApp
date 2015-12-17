@@ -45,6 +45,19 @@ module.exports = {
         recurse(data, "");
         return result;
     },
+
+    createSASToken: function (uri, key_name, key) {
+        // Token expires in 24 hours
+        var expiry = Math.floor(new Date().getTime()/3600*24);
+    
+        var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
+        var hmac = crypto.createHmac('sha256', key);
+        hmac.update(string_to_sign);
+        var signature = hmac.digest('base64');
+        var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
+    
+        return token;
+    },
     
     createEventHubSASToken: function (namespace, hubname, devicename, hours, my_key_name, my_key) {
     
@@ -53,29 +66,19 @@ module.exports = {
         
         // Create a SAS token
         // See http://msdn.microsoft.com/library/azure/dn170477.aspx
-        
-        function create_sas_token(uri, key_name, key)
-        {
-            // Token expires in 24 hours
-            var expiry = Math.floor(new Date().getTime()/3600*hours);
-        
-            var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
-            var hmac = crypto.createHmac('sha256', key);
-            hmac.update(string_to_sign);
-            var signature = hmac.digest('base64');
-            var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
-        
-            return token;
-        }
-        
-        var my_sas = create_sas_token(my_uri, my_key_name, my_key);
+               
+        var my_sas = createSASToken(my_uri, my_key_name, my_key);
         //console.log(my_sas);
         
         return my_sas;     
     },
-    
+       
     push2EventHub: function (payload, namespace, hubname, devicename, my_sas) {
        
+        console.log("push to eventhub");
+        console.log("namespace:"+namespace+", hubname:"+hubname+", devicename:"+devicename+", my_sas:"+my_sas);
+        console.log("payload length:"+payload.length);
+        
         var options = {
             hostname: namespace + '.servicebus.windows.net',
             port: 443,
@@ -85,7 +88,7 @@ module.exports = {
                 'Authorization': my_sas,
                 'Content-Length': payload.length,
                 //'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
-                'Content-Type': 'application/json;charset=utf-8'
+                'Content-Type': 'application/json'
             }
         };
         
@@ -93,10 +96,10 @@ module.exports = {
             console.log("statusCode: ", res.statusCode);
             //console.log("headers: ", res.headers);
         
-                res.on('data', function(d) {
-                    process.stdout.write(d);
-                });
+            res.on('data', function(d) {
+                process.stdout.write(d);
             });
+        });
             
         req.on('error', function(e) {
             console.error(e);
@@ -104,6 +107,9 @@ module.exports = {
             
         req.write(payload);
         req.end();
+        
+        
+       
        
     }
 

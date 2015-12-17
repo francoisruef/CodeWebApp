@@ -16,6 +16,7 @@ var my_key_name = 'sending';
 var my_key = '33Y/Hxudb4SN5DB0mLLD1VrrJj2PLfTxVmiEH+tBy3Q=';
 
 my_sas = helpers.createEventHubSASToken(namespace, hubname, devicename, 1000*24, my_key_name, my_key);
+console.log("my_sas:"+my_sas);
 
 dispatcher.setStatic('resources');
 
@@ -95,26 +96,23 @@ function push2EventHub(docsIn, lastDocId) {
     var jDocs = JSON.parse(docsIn);
     var docs = jDocs.documents;
     
-    for(var i = 0; i < docs.length; i++) {
+    for(var i = 0; i < docs.length && i<1; i++) {
         var obj = docs[i];
     
         console.log(obj.id);
         
         //var payload = JSON.stringify(doc);
-        /*    
         var payloadRaw = { 
-                "id":doc.id,
-                "publicationDate": doc.publicationDate,
-                "channel": doc.channel.name,
-                "languageCode": doc.language.code,
-                "languageName": doc.language.name,
-                "score":doc.score.normalScore
+                "id":obj.id,
+                "publicationDate": obj.publicationDate,
+                "channel": obj.channel.name,
+                "languageCode": obj.language.code,
+                "languageName": obj.language.name,
+                //"score":obj.score.normalScore
         };
-        
         var payload = JSON.stringify(payloadRaw);
-        */
         
-        var payload = JSON.stringify(helpers.flatten(obj));
+        //var payload = JSON.stringify(helpers.flatten(obj));
         
         console.log("payload:"+payload);
         
