@@ -18,12 +18,14 @@ var my_key = '33Y/Hxudb4SN5DB0mLLD1VrrJj2PLfTxVmiEH+tBy3Q=';
 var numDocs = 10;
 var lastDocId = 0;
 
+var port = process.env.PORT || 1337;
+
 my_sas = helpers.createEventHubSASToken(namespace, hubname, devicename, 1000*24, my_key_name, my_key);
 console.log("my_sas:"+my_sas);
 
 dispatcher.setStatic('resources');
 
-http.createServer(handleRequest).listen(80);
+http.createServer(handleRequest).listen(port);
 
 
 function handleRequest(req, res) {
