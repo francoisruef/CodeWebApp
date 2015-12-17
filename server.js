@@ -81,9 +81,7 @@ function processDocs() {
         response.on('end', function () {
 
             // push new documents to event hub
-            push2EventHub(str, lastDocId);
-            lastDocId = re.lastDocId;
-            
+            push2EventHub(str, lastDocId);            
 
             // save last docID
             console.log('lastDocId='+lastDocId);
