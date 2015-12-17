@@ -72,7 +72,7 @@ module.exports = {
         return my_sas;     
     },
        
-    push2EventHub: function (payload, namespace, hubname, devicename, my_sas) {
+    push2EventHub: function (payload, namespace, hubname, devicename, my_sas, counter) {
        
         console.log("push to eventhub");
         console.log("namespace:"+namespace+", hubname:"+hubname+", devicename:"+devicename+", my_sas:"+my_sas);
@@ -92,7 +92,7 @@ module.exports = {
         };
         
         var req = https.request(options, function(res) {
-            console.log("statusCode: ", res.statusCode);
+            console.log("counter: "+counter+", statusCode: ", res.statusCode);
             //console.log("headers: ", res.headers);
         
             res.on('data', function(d) {

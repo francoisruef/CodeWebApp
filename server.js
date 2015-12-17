@@ -122,13 +122,14 @@ function push2EventHub(docsIn, lastDocId) {
         
         console.log("payload:"+payload);
         
-        helpers.push2EventHub(payload, namespace, hubname, devicename, my_sas);
+        helpers.push2EventHub(payload, namespace, hubname, devicename, my_sas, i);
         
         var docId = parseInt(obj.id);
         if (docId > lastDocId) {
             docId = docId;
         }
         console.log("lastDocId:"+lastDocId);
+        console.log("processing payload :"+i);
         
     }    
     
