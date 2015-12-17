@@ -15,6 +15,9 @@ var my_sas = '';
 var my_key_name = 'sending';
 var my_key = '33Y/Hxudb4SN5DB0mLLD1VrrJj2PLfTxVmiEH+tBy3Q=';
 
+var numDocs = 10;
+var lastDocId = 0;
+
 my_sas = helpers.createEventHubSASToken(namespace, hubname, devicename, 1000*24, my_key_name, my_key);
 console.log("my_sas:"+my_sas);
 
@@ -28,10 +31,10 @@ function handleRequest(req, res) {
     dispatcher.dispatch(req, res);
 }
 
-dispatcher.onGet("/", function(req, res) {
+dispatcher.onGet("/ping", function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    console.log('Main Page');
-    res.end('Main Page');
+    console.log('Ping');
+    res.end('Ping');
 });	
 
 dispatcher.onGet("/docs", function(req, res) {
@@ -40,6 +43,10 @@ dispatcher.onGet("/docs", function(req, res) {
     //res.end('Page One');
     
     var docs = getDocs(res);
+    
+    
+    
+    
     console.log('docs = '+docs);
     //res.end('docs output:'+docs);
 });
@@ -47,8 +54,9 @@ dispatcher.onGet("/docs", function(req, res) {
 
 function getDocs(res) {
  
-    var str ='';
-    var lastDocId = 0;
+    lastDocId
+    
+    
     // read lastDocID from database
     
     // get documents
@@ -62,6 +70,7 @@ function getDocs(res) {
         accept: '*/*'
     };
     
+    var str ='';
     callback = function(response) {    
         console.log('getting documents callback');
 
@@ -96,12 +105,14 @@ function push2EventHub(docsIn, lastDocId) {
     var jDocs = JSON.parse(docsIn);
     var docs = jDocs.documents;
     
-    for(var i = 0; i < docs.length && i<1; i++) {
+    for(var i = 0; i < docs.length && i<numDocs; i++) {
         var obj = docs[i];
     
         console.log(obj.id);
+        var payload = '';
         
         //var payload = JSON.stringify(doc);
+        /*
         var payloadRaw = { 
                 "id":obj.id,
                 "publicationDate": obj.publicationDate,
@@ -110,9 +121,10 @@ function push2EventHub(docsIn, lastDocId) {
                 "languageName": obj.language.name,
                 //"score":obj.score.normalScore
         };
-        var payload = JSON.stringify(payloadRaw);
+        payload = JSON.stringify(payloadRaw);
+        */
         
-        //var payload = JSON.stringify(helpers.flatten(obj));
+        payload = JSON.stringify(helpers.flatten(obj));
         
         console.log("payload:"+payload);
         

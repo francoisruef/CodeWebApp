@@ -45,20 +45,7 @@ module.exports = {
         recurse(data, "");
         return result;
     },
-
-    createSASToken: function (uri, key_name, key) {
-        // Token expires in 24 hours
-        var expiry = Math.floor(new Date().getTime()/3600*24);
-    
-        var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
-        var hmac = crypto.createHmac('sha256', key);
-        hmac.update(string_to_sign);
-        var signature = hmac.digest('base64');
-        var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
-    
-        return token;
-    },
-    
+   
     createEventHubSASToken: function (namespace, hubname, devicename, hours, my_key_name, my_key) {
     
         // Full Event Hub publisher URI
@@ -66,7 +53,19 @@ module.exports = {
         
         // Create a SAS token
         // See http://msdn.microsoft.com/library/azure/dn170477.aspx
-               
+        function createSASToken(uri, key_name, key) {
+            // Token expires in 24 hours
+            var expiry = Math.floor(new Date().getTime()/3600*24);
+        
+            var string_to_sign = encodeURIComponent(uri) + '\n' + expiry;
+            var hmac = crypto.createHmac('sha256', key);
+            hmac.update(string_to_sign);
+            var signature = hmac.digest('base64');
+            var token = 'SharedAccessSignature sr=' + encodeURIComponent(uri) + '&sig=' + encodeURIComponent(signature) + '&se=' + expiry + '&skn=' + key_name;
+        
+            return token;
+        };
+       
         var my_sas = createSASToken(my_uri, my_key_name, my_key);
         //console.log(my_sas);
         
