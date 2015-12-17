@@ -12,7 +12,7 @@ var devicename ='test';
 var my_sas = '';
 // Shared access key (from Event Hub configuration)
 var my_key_name = 'sending';
-var my_key = 'key';
+var my_key = '33Y/Hxudb4SN5DB0mLLD1VrrJj2PLfTxVmiEH+tBy3Q=';
 
 dispatcher.setStatic('resources');
 createToken();
@@ -140,8 +140,19 @@ function createToken() {
 
 function callEventHub2(doc) {
     
-    var payload = JSON.stringify(doc);
-    var my_sas = "";
+    //var payload = JSON.stringify(doc);
+        
+    var payloadRaw = { 
+            "id":doc.id,
+            "publicationDate": doc.publicationDate,
+            "channel": doc.channel.name,
+            "languageCode": doc.language.code,
+            "languageName": doc.language.name,
+            "score":doc.score.normalScore
+    };
+    
+    var payload = JSON.stringify(payloadRaw);
+    console.log("payload:"+payload);
     
     var options = {
         hostname: namespace + '.servicebus.windows.net',
@@ -151,23 +162,24 @@ function callEventHub2(doc) {
         headers: {
             'Authorization': my_sas,
             'Content-Length': payload.length,
-            'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
+            //'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
+            'Content-Type': 'application/json'
         }
     };
     
     var req = https.request(options, function(res) {
-    console.log("statusCode: ", res.statusCode);
-    console.log("headers: ", res.headers);
+        console.log("statusCode: ", res.statusCode);
+        //console.log("headers: ", res.headers);
     
-    res.on('data', function(d) {
-            process.stdout.write(d);
+            res.on('data', function(d) {
+                process.stdout.write(d);
+            });
         });
-    });
-    
+        
     req.on('error', function(e) {
         console.error(e);
     });
-    
+        
     req.write(payload);
     req.end();
     
