@@ -31,7 +31,7 @@ module.exports = {
                 for(var i=0, l=cur.length; i<l; i++)
                     recurse(cur[i], prop ? prop+"."+i : ""+i);
                 if (l == 0)
-                    result[prop] = [];
+                    result[prop] = "undefined";
             } else {
                 var isEmpty = true;
                 for (var p in cur) {
@@ -39,7 +39,7 @@ module.exports = {
                     recurse(cur[p], prop ? prop+"."+p : p);
                 }
                 if (isEmpty)
-                    result[prop] = {};
+                    result[prop] = "undefined";
             }
         }
         recurse(data, "");
@@ -87,7 +87,7 @@ module.exports = {
                 'Authorization': my_sas,
                 'Content-Length': payload.length,
                 //'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json;charset=utf-8'
             }
         };
         
@@ -110,6 +110,28 @@ module.exports = {
         
        
        
+    },
+    
+    replaceAll: function (str, find, replace) {
+
+        function escapeRegExp(str) {
+            return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        }
+    
+        return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+    },
+    
+    preprocessPayload: function (structure, obj) {
+        var payload = {'document':'export'};
+        
+        for (var key in structure) {
+            if (structure.hasOwnProperty(key)) {
+                payload[key] = obj[key];
+                //console.log("key:"+key+", value="+obj[key]);
+            }
+        }
+        
+        return payload;
     }
 
 };

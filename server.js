@@ -15,10 +15,103 @@ var my_sas = '';
 var my_key_name = 'sending';
 var my_key = '33Y/Hxudb4SN5DB0mLLD1VrrJj2PLfTxVmiEH+tBy3Q=';
 
-var numDocs = 10;
+var MODE_TEST = 1
+var MODE_PROD = 2
+var MODE = MODE_PROD;
+
 var lastDocId = 0;
+var NUM_DOCS = 100;
+
+// test parameters
+//var MODE = MODE_TEST;
+var OBJ_ID = "20";
 
 var port = process.env.PORT || 1337;
+
+// test payload
+
+TEST_PAYLOAD = 
+{
+  "@class": "TwitterDocument",
+  "id": "10",
+  "type": "POST",
+  "uri": "http://twitter.com/abdulashid7763/statuses/677170029268443136",
+  "publicationDate": "2015-12-16T16:54:50.000+0000",
+  "acquisitionDate": "2015-12-16T16:55:04.940+0000",
+  "modificationDate": 1450284905252,
+  "publisher.id": "72613361",
+  "publisher.name": "myName",
+  "publisher.profileIcon": "https://pbs.twimg.com/profile_images/630545727329038336/QsB37J7V_normal.jpg",
+  "publisher.channel.id": "18",
+  "publisher.channel.name": "Microblogs",
+  "publisher.channel.param": "Twitter",
+  "publisher.screenName": "abdulashid7763",
+  "publisher.displayName": "عبد الله رشيد",
+  "publisher.externalId": "3411529743",
+  "channel.id": "18",
+  "channel.name": "Microblogs",
+  "channel.param": "Twitter",
+  "language.name": "Arabic",
+  "language.code": "ar",
+  "abstractText": "فيديوجستنية لقناة 24 الرياضية :سقوط محمد نور بـ المنشطات مكيدة دُبرت له بكاس شاهي <a href=\"https://t.co/4Rum8uIeeP\" target=\"_blank\">https://t.co/4Rum8uIeeP</a> … <a href=\"https://twitter.com/search?q=%23ksa&src=hash\" target=\"_blank\">#ksa</a> <a href=\"https://twitter.com/search?q=%23%D9%85%D9%83%D8%A9&src=hash\" target=\"_blank\">#مكة</a> <a href=\"https://twitter.com/search?q=%23%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9&src=hash\" target=\"_blank\">#المدينة</a> <a href=\"https://twitter.com/search?q=%23%D8%A7%D8%A8%D9%87%D8%A7&src=hash\" target=\"_blank\">#ابها</a> <a href=\"https://twitter.com/search?q=%23%D8%A7%D9%84%D8%AF%D9%85%D8%A7%D9%85&src=hash\" target=\"_blank\">#الدمام</a>",
+  "score.normalScore": 2,
+  "score.providerScore": 12,
+  "score.provider": "KLOUT",
+  "comments": 0,
+  "externalId": "677170029268443136",
+  "tags": "undefined",
+  "assignedTo": "undefined",
+  "hasEngagementHistory": false,
+  "fullContentLength": 140,
+  "searchItems.0": 116012,
+  "twitterId": "677170029268443136",
+  "retweet": false,
+  "documentPlaceholder": false
+  
+};
+
+PAYLOAD_STRUCTURE = 
+{
+  "@class": "TwitterDocument",
+  "id": "10",
+  "type": "POST",
+  "uri": "http://twitter.com/abdulashid7763/statuses/677170029268443136",
+  "publicationDate": "2015-12-16T16:54:50.000+0000",
+  "acquisitionDate": "2015-12-16T16:55:04.940+0000",
+  "modificationDate": 1450284905252,
+  "publisher.id": "72613361",
+  //"publisher.name": "myName",
+  "publisher.profileIcon": "https://pbs.twimg.com/profile_images/630545727329038336/QsB37J7V_normal.jpg",
+  "publisher.channel.id": "18",
+  "publisher.channel.name": "Microblogs",
+  "publisher.channel.param": "Twitter",
+  //"publisher.screenName": "abdulashid7763",
+  //"publisher.displayName": "عبد الله رشيد",
+  "publisher.externalId": "3411529743",
+  "channel.id": "18",
+  "channel.name": "Microblogs",
+  "channel.param": "Twitter",
+  "language.name": "Arabic",
+  "language.code": "ar",
+  //"abstractText": "فيديوجستنية لقناة 24 الرياضية :سقوط محمد نور بـ المنشطات مكيدة دُبرت له بكاس شاهي <a href=\"https://t.co/4Rum8uIeeP\" target=\"_blank\">https://t.co/4Rum8uIeeP</a> … <a href=\"https://twitter.com/search?q=%23ksa&src=hash\" target=\"_blank\">#ksa</a> <a href=\"https://twitter.com/search?q=%23%D9%85%D9%83%D8%A9&src=hash\" target=\"_blank\">#مكة</a> <a href=\"https://twitter.com/search?q=%23%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9&src=hash\" target=\"_blank\">#المدينة</a> <a href=\"https://twitter.com/search?q=%23%D8%A7%D8%A8%D9%87%D8%A7&src=hash\" target=\"_blank\">#ابها</a> <a href=\"https://twitter.com/search?q=%23%D8%A7%D9%84%D8%AF%D9%85%D8%A7%D9%85&src=hash\" target=\"_blank\">#الدمام</a>",
+  "score.normalScore": 2,
+  "score.providerScore": 12,
+  "score.provider": "KLOUT",
+  //"comments": 0,
+  "externalId": "677170029268443136",
+  "tags": "undefined",
+  "assignedTo": "undefined",
+  "hasEngagementHistory": false,
+  "fullContentLength": 140,
+  "searchItems.0": 116012,
+  "twitterId": "677170029268443136",
+  "retweet": false,
+  "documentPlaceholder": false,
+  "sentiment.curated": false,
+  "sentiment.polarity": "neutral",
+  "embeddedMedia": "http://www.youtube.com/embed/BqnpUlWCVKw",  
+};
+
 
 my_sas = helpers.createEventHubSASToken(namespace, hubname, devicename, 1000*24, my_key_name, my_key);
 console.log("my_sas:"+my_sas);
@@ -26,6 +119,9 @@ console.log("my_sas:"+my_sas);
 dispatcher.setStatic('resources');
 
 http.createServer(handleRequest).listen(port);
+
+// get latest doc
+processDocs(true);
 
 
 function handleRequest(req, res) {
@@ -44,14 +140,14 @@ dispatcher.onGet("/docs", function(req, res) {
     console.log('/docs');
     //res.end('Page One');
     
-    var re = processDocs(helpers.push2EventHub);
+    var re = processDocs(false);
     
     console.log('/docs');
     res.end('/docs');
 });
 
 
-function processDocs() {
+function processDocs(init) {
  
     // read lastDocID from database
     // not implemented yet
@@ -81,10 +177,8 @@ function processDocs() {
         response.on('end', function () {
 
             // push new documents to event hub
-            push2EventHub(str, lastDocId);            
-
-            // save last docID
-            console.log('lastDocId='+lastDocId);
+            push2EventHub(str, init);
+            //console.log(str);            
 
         });
         
@@ -94,44 +188,61 @@ function processDocs() {
     
 };
 
-function push2EventHub(docsIn, lastDocId) {
+function push2EventHub(docsIn, init) {
     var jDocs = JSON.parse(docsIn);
     var docs = jDocs.documents;
     
     var processed = 0;
+    var docId = 0;
+    var maxDocId = 0;
     
-    for(var i = 0; i < docs.length && i<numDocs; i++) {
+    for(var i = 0; i < docs.length && i<NUM_DOCS; i++) {
         var obj = docs[i];
-        console.log(obj.id);
-        var payload = '';
         
-        //var payload = JSON.stringify(doc);
-        var payloadRaw = { 
-                "id":obj.id,
-                "publicationDate": obj.publicationDate,
-                "channel": obj.channel.name,
-                "languageCode": obj.language.code,
-                "languageName": obj.language.name,
-                //"score":obj.score.normalScore
-        };
-        payload = JSON.stringify(payloadRaw);
+        docId = parseInt(obj.id);
+        console.log("docId:"+docId);
         
-        //payload = JSON.stringify(helpers.flatten(obj));
-        
-        console.log("payload:"+payload);
-        
-        helpers.push2EventHub(payload, namespace, hubname, devicename, my_sas, i);
-        processed = processed+1;
-        
-        var docId = parseInt(obj.id);
-        if (docId > lastDocId) {
-            docId = docId;
+        if (docId>lastDocId) {
+            console.log("RAW:"+JSON.stringify(helpers.flatten(obj), null, "\t"));
+            var payload = '';
+                    
+            if (MODE == MODE_TEST) {
+                TEST_PAYLOAD.id = OBJ_ID;
+                payload = helpers.flatten(TEST_PAYLOAD);
+                payload = helpers.preprocessPayload(PAYLOAD_STRUCTURE, payload);
+                payload = JSON.stringify(payload);
+            } else {
+                payload = helpers.flatten(obj);
+                payload = helpers.preprocessPayload(PAYLOAD_STRUCTURE, payload);
+                payload = JSON.stringify(payload);
+            }
+                
+            console.log("payload:"+payload);
+            
+            if (!init) {
+                helpers.push2EventHub(payload, namespace, hubname, devicename, my_sas, i);
+            }
+            processed = processed+1;
+            
+            
+            if (docId > maxDocId) {
+                maxDocId = docId;
+            }
+            console.log("maxDocId:"+maxDocId);
+            console.log("processing payload :"+i);
+        } else {
+            console.log("document already processed");
         }
-        console.log("lastDocId:"+lastDocId);
-        console.log("processing payload :"+i);
-        
-    }    
+         
+    }
     
+    if (maxDocId > lastDocId) {
+        lastDocId = maxDocId;    
+    }
+    
+    // save last docID
+    console.log('lastDocId='+lastDocId);
+   
     return {"lastDocId": lastDocId, "processed": processed};
 }
 
